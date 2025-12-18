@@ -3,23 +3,29 @@ import Page from "../models/Page.js";
 
 const router = express.Router();
 
-/* GET PAGE DATA */
-router.get("/:pageType", async (req, res) => {
+/* GET page by dropdown */
+router.get("/:pageType/:category", async (req, res) => {
   try {
-    const page = await Page.findOne({ pageType: req.params.pageType });
+    const page = await Page.findOne({
+      pageType: req.params.pageType,
+      category: req.params.category,
+    });
     res.json(page);
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-/* CREATE / UPDATE PAGE */
+/* CREATE or UPDATE page */
 router.post("/", async (req, res) => {
   try {
     const page = await Page.findOneAndUpdate(
-      { pageType: req.body.pageType },
+      {
+        pageType: req.body.pageType,
+        category: req.body.category,
+      },
       req.body,
-      { upsert: true, new: true }
+      { new: true, upsert: true }
     );
     res.json(page);
   } catch (err) {

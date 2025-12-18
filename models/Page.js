@@ -1,22 +1,30 @@
 import mongoose from "mongoose";
 
-const sectionSchema = new mongoose.Schema({
-  heading: String,
+/* card item */
+const itemSchema = new mongoose.Schema({
   title: String,
   description: String,
-  buttonText: String,
-  buttonLink: String,
 });
 
+/* page schema */
 const pageSchema = new mongoose.Schema({
-  pageType: {
-    type: String,
-    required: true,
-    unique: true,
+  pageType: String,     // "projects"
+  category: String,     // "thermal", "solar", etc (dropdown value)
+
+  section1: {
+    heading: String,
+    description: String,
   },
-  section1: sectionSchema,
-  section2: sectionSchema,
-  section3: sectionSchema,
+
+  section2: {
+    heading: String,
+    items: [itemSchema],
+  },
+
+  section3: {
+    heading: String,
+    items: [itemSchema],
+  },
 });
 
 export default mongoose.model("Page", pageSchema);
