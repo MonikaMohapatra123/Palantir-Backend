@@ -1,35 +1,127 @@
+// import express from "express";
+// import Page from "../models/Page.js";
+
+// const router = express.Router();
+
+// /* GET page by dropdown */
+// router.get("/:pageType/:category", async (req, res) => {
+//   try {
+//     const page = await Page.findOne({
+//       pageType: req.params.pageType,
+//       category: req.params.category,
+//     });
+//     res.json(page);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+// /* CREATE or UPDATE page */
+// router.post("/", async (req, res) => {
+//   try {
+//     const page = await Page.findOneAndUpdate(
+//       {
+//         pageType: req.body.pageType,
+//         category: req.body.category,
+//       },
+//       req.body,
+//       { new: true, upsert: true }
+//     );
+//     res.json(page);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+// export default router;
+
+
+
 import express from "express";
 import Page from "../models/Page.js";
 
 const router = express.Router();
 
-/* GET page by dropdown */
+/* =========================
+   CREATE (Add new page)
+========================= */
+router.post("/", async (req, res) => {
+  try {
+    const page = new Page(req.body);
+    await page.save();
+    res.status(201).json(page);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* =========================
+   READ – Get ALL pages
+========================= */
+router.get("/", async (req, res) => {
+  try {
+    const pages = await Page.find();
+    res.json(pages);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* =========================
+   READ – Get page by type & category
+========================= */
 router.get("/:pageType/:category", async (req, res) => {
   try {
     const page = await Page.findOne({
       pageType: req.params.pageType,
       category: req.params.category,
     });
+
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
     res.json(page);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message });
   }
 });
 
-/* CREATE or UPDATE page */
-router.post("/", async (req, res) => {
+/* =========================
+   UPDATE – By ID
+========================= */
+router.put("/:id", async (req, res) => {
   try {
-    const page = await Page.findOneAndUpdate(
-      {
-        pageType: req.body.pageType,
-        category: req.body.category,
-      },
+    const page = await Page.findByIdAndUpdate(
+      req.params.id,
       req.body,
-      { new: true, upsert: true }
+      { new: true }
     );
+
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
     res.json(page);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* =========================
+   DELETE – By ID
+========================= */
+router.delete("/:id", async (req, res) => {
+  try {
+    const page = await Page.findByIdAndDelete(req.params.id);
+
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    res.json({ message: "Page deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
