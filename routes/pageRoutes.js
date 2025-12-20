@@ -86,9 +86,7 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-/* =========================
-   READ – Navbar grouped data
-========================= */
+// Navbar grouped data
 router.get("/navbar/grouped", async (req, res) => {
   try {
     const pages = await Page.find({}, "pageType category");
